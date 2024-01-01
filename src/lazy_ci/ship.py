@@ -1,6 +1,7 @@
 import subprocess
 import os
 import git
+from loguru import logger
 
 
 def tag(version):
@@ -21,7 +22,7 @@ def bump_version(should_tag=True):
     result = subprocess.run(["bump-my-version", "bump"], check=False)
     if result.returncode == 0:
         return True
-    print("bump-my-version failed! Attempting file-based version bump")
+    logger.warning("bump-my-version failed! Attempting file-based version bump")
     # Find the version file
     version_file = None
     possible_version_file_names = [
@@ -41,10 +42,10 @@ def bump_version(should_tag=True):
                 version_file = full_path
                 break
     if version_file is None:
-        print("Could not find a version file!")
+        logger.warning("Could not find a version file!")
         return False
     # Read the version file
-    print(f"Found version file at {version_file}")
+    logger.info(f"Found version file at {version_file}")
     with open(version_file, "r", encoding="utf-8") as f:
         version_contents = f.read()
     # Increment the version
@@ -63,12 +64,12 @@ def bump_version(should_tag=True):
             version = line.split("=")[1].strip().strip('"').strip("'")
             break
     if version is None:
-        print("Could not find a version in the version file!")
+        logger.warning("Could not find a version in the version file!")
         return False
     version_parts = version.split(".")
     version_parts[-1] = str(int(version_parts[-1]) + 1)
     new_version = ".".join(version_parts)
-    print(f"Bumping version from {version} to {new_version}")
+    logger.info(f"Bumping version from {version} to {new_version}")
     # Write the version file
     with open(version_file, "w", encoding="utf-8") as f:
         f.write(version_contents.replace(version, new_version))
@@ -80,7 +81,7 @@ def bump_version(should_tag=True):
 def ship():
     # Run bump-my-version
     if not bump_version():
-        print("Version bump failed!")
+        logger.critical("Version bump failed!")
         return False
     # Clean up old builds
     subprocess.run(["rm", "-rf", "dist"], check=False)
