@@ -18,7 +18,8 @@ dependencies = [
 "tqdm",
 "loguru",
 "GitPython",
-"prospector",
+"pylint",
+"lizard",
 "black",
 "bump-my-version"]
 dynamic = ["version"]

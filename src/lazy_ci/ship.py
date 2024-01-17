@@ -1,11 +1,16 @@
-import subprocess
+"""
+A module for shipping a Python package to PyPI.
+"""
+
 import os
+import subprocess
+
 import git
 from loguru import logger
 
 
 def tag(version):
-    # Create a git tag
+    """Create a git tag"""
     repo = git.Repo.init(".")
     repo.create_tag(version)
     repo.remotes.origin.push(version)
@@ -13,12 +18,13 @@ def tag(version):
 
 
 def is_file_git_ignored(file):
+    """Check if a file is git ignored"""
     repo = git.Repo.init(".")
     return file in repo.ignored(file)
 
 
 def bump_version(should_tag=True):
-    # Run bump-my-version
+    """Run bump-my-version or increment the version in a file"""
     result = subprocess.run(["bump-my-version", "bump"], check=False)
     if result.returncode == 0:
         return True
@@ -46,8 +52,8 @@ def bump_version(should_tag=True):
         return False
     # Read the version file
     logger.info(f"Found version file at {version_file}")
-    with open(version_file, "r", encoding="utf-8") as f:
-        version_contents = f.read()
+    with open(version_file, "r", encoding="utf-8") as file:
+        version_contents = file.read()
     # Increment the version
     # Must support my favorite format of:
     # VERSION = "1.0.0"
@@ -71,15 +77,15 @@ def bump_version(should_tag=True):
     new_version = ".".join(version_parts)
     logger.info(f"Bumping version from {version} to {new_version}")
     # Write the version file
-    with open(version_file, "w", encoding="utf-8") as f:
-        f.write(version_contents.replace(version, new_version))
+    with open(version_file, "w", encoding="utf-8") as file:
+        file.write(version_contents.replace(version, new_version))
     if should_tag:
         tag(new_version)
     return True
 
 
 def ship():
-    # Run bump-my-version
+    """Ship a Python package to PyPI"""
     if not bump_version():
         logger.critical("Version bump failed!")
         return False

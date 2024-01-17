@@ -1,10 +1,15 @@
+"""Main entry point for lazy-ci."""
+
+import sys
+
+from loguru import logger
+
 from lazy_ci.code_quality import run_code_quality
 from lazy_ci.ship import ship
-import sys
-from loguru import logger
 
 
 def main():
+    """Main entry point for lazy-ci."""
     if len(sys.argv) == 1:
         logger.warning("No command provided, running code quality checks as default")
         if not run_code_quality():
@@ -21,6 +26,9 @@ def main():
         else:
             if not ship():
                 sys.exit(1)
+    else:
+        logger.error("Unknown command")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
