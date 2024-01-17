@@ -9,7 +9,7 @@ def run_code_quality():
     commands = [
         ["pytest", "-v"],
         ["black", "--check", "."],
-        ["pylint", "--ignore-paths", ".*test.*", "--recursive", "y", "."],
+        ["pylint", "--ignore-paths", ".*test.*|.git", "--recursive", "y", "."],
         ["lizard", "."],
     ]
 
@@ -30,13 +30,17 @@ def run_code_quality():
                 f"Issue found with command: {' '.join(process.args)}"
             )
             issues_found = True
-        if stderr:
-            logger.error(stderr.decode("utf-8"))
-        if stdout:
-            logger.info(stdout.decode("utf-8"))
+            if stderr:
+                logger.error(stderr.decode("utf-8"))
+            if stdout:
+                logger.info(stdout.decode("utf-8"))
     if issues_found:
         logger.error("Issues found with the following commands:")
         for issue_found_with in issues_found_with:
             logger.error(issue_found_with)
+    else:
+        for command in commands:
+            logger.info(f"Command {' '.join(command)} passed")
+        logger.info("No issues found😎😎😎")
 
     return not issues_found
