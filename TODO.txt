@@ -1,2 +1,3 @@
-(A) Use loguru for logging everywhere
+X (A) Use loguru for logging everywhere
 x (A) Add lazyci and lazy-ci to scripts
+(A) Add timeouts to each process
