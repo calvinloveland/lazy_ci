@@ -1,4 +1,5 @@
 """Code quality checks for lazy-ci."""
+
 import subprocess
 
 from loguru import logger
@@ -19,7 +20,7 @@ def run_code_quality():
     processes = []
     for command in commands:
         process = subprocess.Popen(  # pylint: disable=consider-using-with
-            command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=600
         )
         processes.append(process)
     for process in processes:
