@@ -20,11 +20,15 @@ def run_code_quality():
     processes = []
     for command in commands:
         process = subprocess.Popen(  # pylint: disable=consider-using-with
-            command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=600
+            command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         processes.append(process)
     for process in processes:
-        stdout, stderr = process.communicate()
+        try:
+            stdout, stderr = process.communicate(timeout=600)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            stdout, stderr = process.communicate()
         return_code = process.wait()
         if return_code != 0:
             issues_found_with.append(
