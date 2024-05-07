@@ -36,7 +36,7 @@ def run_code_quality():
         logger.warning(os.getcwd())
         current_command = " ".join(process.args)
         try:
-            stdout, stderr = process.communicate(timeout=60)
+            stdout, stderr = process.communicate(timeout=300)
         except subprocess.TimeoutExpired:
             logger.error(f"Timeout on process: {current_command}")
             process.kill()
