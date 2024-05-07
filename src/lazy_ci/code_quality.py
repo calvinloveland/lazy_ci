@@ -1,5 +1,6 @@
 """Code quality checks for lazy-ci."""
 
+import os
 import subprocess
 
 from loguru import logger
@@ -7,11 +8,19 @@ from loguru import logger
 
 def run_code_quality():
     """Run code quality checks"""
+    cwd = os.getcwd()
     commands = [
         ["pytest", "-v"],
-        ["black", "--check", "."],
-        ["pylint", "--ignore-paths", ".*test.*|.git", "--recursive", "y", "."],
-        ["lizard", "."],
+        ["black", "--check", cwd],
+        [
+            "pylint",
+            "--ignore-paths",
+            ".*test.*|.git*|venv/*",
+            "--recursive",
+            "y",
+            ".",
+        ],
+        ["lizard", "-x", "*/venv/*", "."],
     ]
 
     # Run commands in parallel
@@ -24,21 +33,25 @@ def run_code_quality():
         )
         processes.append(process)
     for process in processes:
+        logger.warning(os.getcwd())
+        current_command = " ".join(process.args)
         try:
-            stdout, stderr = process.communicate(timeout=600)
+            stdout, stderr = process.communicate(timeout=60)
         except subprocess.TimeoutExpired:
+            logger.error(f"Timeout on process: {current_command}")
             process.kill()
             stdout, stderr = process.communicate()
         return_code = process.wait()
         if return_code != 0:
-            issues_found_with.append(
-                f"Issue found with command: {' '.join(process.args)}"
-            )
+            issues_found_with.append(f"Issue found with command: {current_command}")
             issues_found = True
-            if stderr:
-                logger.error(stderr.decode("utf-8"))
-            if stdout:
-                logger.info(stdout.decode("utf-8"))
+            try:
+                if stderr:
+                    logger.error(stderr.decode("utf-8")[10:])
+                if stdout:
+                    logger.info(stdout.decode("utf-8")[10:])
+            except UnicodeDecodeError:
+                logger.error("Unicode decode error!")
     if issues_found:
         logger.error("Issues found with the following commands:")
         for issue_found_with in issues_found_with:
