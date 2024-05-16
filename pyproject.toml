@@ -21,7 +21,8 @@ dependencies = [
 "pylint",
 "lizard",
 "black",
-"bump-my-version"]
+"bump-my-version",
+"ConfigArgParse"]
 dynamic = ["version"]
 
 [project.scripts]
