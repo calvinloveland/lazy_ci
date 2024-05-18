@@ -10,10 +10,10 @@ from lazy_ci.ship import ship
 
 def main():
     """Main entry point for lazy-ci."""
-    parser = configargparse.ArgParser(default_config_files=['config.yml'])
-    parser.add('-c', '--config', is_config_file=True, help='config file path')
-    parser.add('--code-quality', help='Run code quality checks', action='store_true')
-    parser.add('--ship', help='Ship code', action='store_true')
+    parser = configargparse.ArgParser(default_config_files=["config.yml"])
+    parser.add("-c", "--config", is_config_file=True, help="config file path")
+    parser.add("--code-quality", help="Run code quality checks", action="store_true")
+    parser.add("--ship", help="Ship code", action="store_true")
 
     options = parser.parse_args()
 
