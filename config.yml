@@ -1,0 +1,3 @@
+# Default configuration for lazy_ci
+code-quality: true
+ship: false
