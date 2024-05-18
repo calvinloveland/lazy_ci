@@ -1,5 +1,6 @@
 """Main entry point for lazy-ci."""
 
+import sys
 import configargparse
 
 from loguru import logger
