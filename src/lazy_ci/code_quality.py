@@ -6,7 +6,7 @@ import subprocess
 from loguru import logger
 
 
-def run_code_quality():
+def run_code_quality(tool_timeout=9999):
     """Run code quality checks"""
     cwd = os.getcwd()
     commands = [
@@ -36,7 +36,7 @@ def run_code_quality():
         logger.warning(os.getcwd())
         current_command = " ".join(process.args)
         try:
-            stdout, stderr = process.communicate(timeout=9999)
+            stdout, stderr = process.communicate(timeout=tool_timeout)
         except subprocess.TimeoutExpired:
             logger.error(f"Timeout on process: {current_command}")
             process.kill()
